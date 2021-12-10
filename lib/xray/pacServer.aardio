@@ -40,7 +40,7 @@ $serverMain = ..wsock.tcp.simpleHttpServer.mainThread(
 );
 $serverMain.threadNum = 50; 
 
-var pacPath = ..io.appData("/WinXray/pac.txt");
+var pacPath = "/data/pac.txt";
 resetPac = function(){
 	..string.save(pacPath,$"/pac.txt" )
 }

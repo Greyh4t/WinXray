@@ -31,33 +31,33 @@ var getRulesUrl = function(){
 
 update = function(){
     ..mainForm.disabled = true; 
-    	
+
 	var coreDir = ..xray.core.getCoreDir();
 	var url,versionTag = getRulesUrl();
 	if(!url){		
 		..mainForm.disabled = false;
 		return null;
 	}
-	  
+
 	import fsys;
-	fsys.delete( ..io.appData("/WinXray/temp/rules/") );
-	 
+	fsys.delete( "/data/temp/rules/" );
+
 	import zlib.httpFile;
 	if( ..zlib.httpFile.download(url,"正在下载最新路由规则，版本：" + versionTag
-		,..io.appData("/WinXray/download/")
-		,..io.appData("/WinXray/temp/rules/"),,..mainForm.hwnd) ){
+		,"/data/download/"
+		,"/data/temp/rules/",,..mainForm.hwnd) ){
 			..mainForm.disabled = false;
 			
-			if(..io.exist(..io.appData("/WinXray/temp/rules/geoip.dat"))){
+			if(..io.exist("/data/temp/rules/geoip.dat")){
 				
 				..io.createDir(coreDir); 
-				fsys.copy(..io.appData("/WinXray/temp/rules/*.*"),coreDir);   
+				fsys.copy("/data/temp/rules/*.*",coreDir);
 				return versionTag;
 			}  
 	}
 	else {
 		..mainForm.disabled = false; 
-	} 	 
+	}
 }
 
 check = function(){

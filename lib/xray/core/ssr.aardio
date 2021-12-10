@@ -94,7 +94,7 @@ downloadCore = function(){
 	
 	import zlib.httpFile;
 	if( ..zlib.httpFile.download(url,"正在下载 SSR Core（ShadowsocksR-native）" 
-		,..io.appData("/WinXray/download/ssr")
+		,"/data/download/ssr"
 		,coreDir,,..mainForm.hwnd) ){
 			
 		..mainForm.disabled = false;
@@ -121,7 +121,7 @@ getPath = function(hwnd){
 		return path;
 	}
 		
-	var path = ..io.appData("/WinXray/ssr-core/ssr-client.exe");
+	var path = "/data/ssr-core/ssr-client.exe";
 	if(..io.exist(path)){
 		return path;
 	}
@@ -140,9 +140,9 @@ getCoreDir = function(hwnd){
 		return ..io.fullpath("/xray-core/ssr-core/");
 	}
 		
-	var path = ..io.appData("/WinXray/ssr-core/ssr-client.exe");
+	var path = "/data/ssr-core/ssr-client.exe";
 	if(..io.exist(path)){
-		return ..io.appData("/WinXray/ssr-core/");;;
+		return "/data/ssr-core/";
 	}
 	
 	var path = ..io.fullpath("/xray-core/xray.exe");
@@ -150,9 +150,9 @@ getCoreDir = function(hwnd){
 		return ..io.fullpath("/xray-core/ssr-core/");
 	}
 		
-	var path = ..io.appData("/WinXray/core/xray.exe");
+	var path = "/data/core/xray.exe";
 	if(..io.exist(path)){
-		return ..io.appData("/winXray/ssr-core/");
+		return "/data/ssr-core/";
 	}
 	
 	var path = ..io.fullpath("/xray-core/");
@@ -160,7 +160,7 @@ getCoreDir = function(hwnd){
 		return ..io.fullpath("/xray-core/ssr-core/");
 	}
 		
-	return ..io.appData("/winXray/ssr-core/");
+	return "/data/ssr-core/";
 } 
 
 updateCore = function(){
@@ -175,15 +175,15 @@ updateCore = function(){
 	}
 	
 	import fsys;
-	fsys.delete(..io.appData("/xray/temp/ssr/"))
+	fsys.delete("/data/temp/ssr/")
  
 	import zlib.httpFile;
 	if( ..zlib.httpFile.download(url,"正在下载 SSR Core（ShadowsocksR-native），版本：" + versionTag
-		,..io.appData("/winXray/download/ssr/")
-		,..io.appData("/winXray/temp/ssr/"),,..mainForm.hwnd) ){
+		,"/data/download/ssr/"
+		,"/data/temp/ssr/",,..mainForm.hwnd) ){
 			..mainForm.disabled = false;
 			
-			if(..io.exist(..io.appData("/winXray/temp/ssr/ssr-client.exe"))){
+			if(..io.exist("/data/temp/ssr/ssr-client.exe")){
 				import sysProxy;
 				sysProxy.reset(false);
 
@@ -191,7 +191,7 @@ updateCore = function(){
 				process.file.terminate(..io.joinpath(coreDir,"ssr-client.exe")); 
 				
 				..io.createDir(coreDir); 
-				fsys.copy(..io.appData("/winXray/temp/ssr/*.*"),coreDir); 
+				fsys.copy("/data/temp/ssr/*.*",coreDir); 
 				
 				return versionTag;
 			} 

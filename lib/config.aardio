@@ -1,6 +1,6 @@
 ﻿//config 配置文件 
 import fsys.config;
-config  = fsys.config( io.appData("/WinXray/") ); 
+config  = fsys.config("/data/"); 
 
 namespace config {
 	__appName = "WinXray"; 

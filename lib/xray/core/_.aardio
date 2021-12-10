@@ -213,7 +213,7 @@ getPath = function(hwnd){
 		return path;
 	}
 		
-	var path = ..io.appData("/WinXray/core/xray.exe");
+	var path = "/data/core/xray.exe";
 	if(..io.exist(path)){
 		return path;
 	}
@@ -232,10 +232,10 @@ getPath = function(hwnd){
 	if(self.lastDownloadingCoreFailed){
 		return;
 	}
-	
+
 	..mainForm.disabled = true; 
 	var url,versionTag = getxrayCoreUrl();
-	 
+
 	if(!url) {
 		..publish("uiCommand.print","请下载 Xray Core 到以下路径:");
 		..publish("uiCommand.print",path);
@@ -244,12 +244,12 @@ getPath = function(hwnd){
 		self.lastDownloadingCoreFailed = true;
 		return null;
 	}
-	
+
 	import zlib.httpFile;
 	if( ..zlib.httpFile.download(url,"正在下载 Xray Core"
-		,..io.appData("/WinXray/download/")
-		,..io.appData("/WinXray/core/"),,..mainForm.hwnd) ){
-			
+		,"/data/download/"
+		,"/data/core/",,..mainForm.hwnd) ){
+
 		self.lastDownloadingCoreFailed = null;
 		..mainForm.disabled = false;
 		return ..io.exist(path);
@@ -262,12 +262,12 @@ getPath = function(hwnd){
 		..publish("uiCommand.print",url);
 		
 		..publish("uiCommand.print","下载后请解压到以下目录内:");
-		..publish("uiCommand.print",..io.appData("/WinXray/core/"));
+		..publish("uiCommand.print","/data/core/");
 		
 		//import process;
 		//process.execute(..io._exepath,"/github","runas");
-	}  
-} 
+	}
+}
 
 getCoreDir = function(hwnd){
 	var path = ..io.fullpath("/xray-core/xray.exe");
@@ -275,9 +275,9 @@ getCoreDir = function(hwnd){
 		return ..io.fullpath("/xray-core/");
 	}
 		
-	var path = ..io.appData("/WinXray/core/xray.exe");
+	var path = "/data/core/xray.exe";
 	if(..io.exist(path)){
-		return ..io.appData("/WinXray/core/");;
+		return "/data/core/";
 	}
 	
 	var path = ..io.fullpath("/xray-core/");
@@ -285,31 +285,30 @@ getCoreDir = function(hwnd){
 		return path;
 	}
 	
-	return ..io.appData("/WinXray/core/");
+	return "/data/core/";
 } 
 
 updateCore = function(){
     ..mainForm.disabled = true; 
-    	
+
 	var coreDir = getCoreDir();
 	var url,versionTag = getxrayCoreUrl();
-	if(!url){		
+	if(!url){
 		..mainForm.disabled = false;
 		self.lastDownloadingCoreFailed = true;
 		return null;
 	}
-	  
+
 	import fsys;
-	fsys.delete( ..io.appData("/WinXray/temp/xray/") );
-	 
+	fsys.delete("/data/temp/xray/");
 	
 	import zlib.httpFile;
 	if( ..zlib.httpFile.download(url,"正在下载 Xray Core，版本：" + versionTag
-		,..io.appData("/WinXray/download/")
-		,..io.appData("/WinXray/temp/xray/"),,..mainForm.hwnd) ){
+		,"/data/download/"
+		,"/data/temp/xray/",,..mainForm.hwnd) ){
 			..mainForm.disabled = false;
 			
-			if(..io.exist(..io.appData("/WinXray/temp/xray/xray.exe"))){
+			if(..io.exist("/data/temp/xray/xray.exe")){
 				import sysProxy;
 				sysProxy.reset(false);
 
@@ -318,20 +317,20 @@ updateCore = function(){
 				//process.file.terminate(..io.joinpath(coreDir,"v2ctl.exe")); 
 				
 				..io.createDir(coreDir); 
-				fsys.copy(..io.appData("/WinXray/temp/xray/xray.exe"),..io.joinpath(coreDir,"xray.exe")); 
+				fsys.copy("/data/temp/xray/xray.exe",..io.joinpath(coreDir,"xray.exe")); 
 				//fsys.copy(..io.appData("/WinXray/temp/xray/v2ctl.exe"),..io.joinpath(coreDir,"v2ctl.exe")); 
 				
 				self.lastDownloadingCoreFailed = null;
 				return versionTag;
-			} 
+			}
 			else {
 				self.lastDownloadingCoreFailed = true;
-			} 
+			}
 	}
 	else {
 		..mainForm.disabled = false;
 		self.lastDownloadingCoreFailed = true; 
-	} 	 
+	}
 }
 
 /**intellisense(xray.core)
