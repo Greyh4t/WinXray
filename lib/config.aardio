@@ -28,7 +28,7 @@ if(config.proxy.useSocksPac === null){
 }
 
 if(config.proxy.enableGitConfigGithub === null){
-	config.proxy.enableGitConfigGithub = true;
+	config.proxy.enableGitConfigGithub = false;
 }
 
 if(config.proxy.test === null){
