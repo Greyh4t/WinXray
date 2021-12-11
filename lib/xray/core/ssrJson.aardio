@@ -1,8 +1,8 @@
 ﻿//ssrJson 内核配置（SSR）
-import web.json;   
+import web.json;
 
 namespace xray.core.ssrJson;
- 
+
 write  = function(jsonPath,outbound,ssrSocksPort){
     if(!outbound){ return; }
 	if(type(outbound.port) != type.number){
@@ -23,7 +23,7 @@ write  = function(jsonPath,outbound,ssrSocksPort){
 		obfs_param = outbound.obfsParam: "";
 		over_tls_settings = {
 			enable = outbound.tls == "tls";
-			path = outbound.path: "/abcd1234/"; 
+			path = outbound.path: "/abcd1234/";
 			server_domain = outbound.sni : "";
 		};
 		password = outbound.id;
@@ -31,7 +31,7 @@ write  = function(jsonPath,outbound,ssrSocksPort){
 		protocol_param = outbound.networkParam:"";
 		udp= outbound.udp === null? true : outbound.udp;
 		udp_timeout=6
-	} 
+	}
 
 	..string.save(jsonPath,..web.json.stringify(current) );
 	return jsonPath;

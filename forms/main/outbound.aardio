@@ -35,15 +35,15 @@ static5={cls="static";text="传输协议( network ):";left=473;top=94;right=641;
 winform.outboundConfig = {};
 winform.addOutboundField = function(k,v){
 	if(winform.outboundConfig[k] !== null){
-		return winform.msgInfo("该字段已经存在，不需要添加！"); 
+		return winform.msgInfo("该字段已经存在，不需要添加！");
 	}
-	
+
 	winform.outboundConfig[k] = v;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.cmbProtocol.onProtocolChange = function(){ 
+winform.cmbProtocol.onProtocolChange = function(){
 	var sel = winform.cmbProtocol.selText;
 	if(sel=="vmess"){
 		winform.cmbSecurity.items = {
@@ -51,7 +51,7 @@ winform.cmbProtocol.onProtocolChange = function(){
 		}
 		winform.cmbSecurity.selIndex = 1;
 		winform.outboundConfig.security = "auto";
-		
+
 		winform.cmbNetwork.items = {
 			"tcp";"ws";"kcp";"h2";"quic";"grpc";
 		}
@@ -67,7 +67,7 @@ winform.cmbProtocol.onProtocolChange = function(){
 
 		winform.cmbSecurity.selIndex = 1;
 		winform.outboundConfig.security = "aes-256-gcm";
-		
+
 		winform.cmbNetwork.items = {"tcp";}
 		winform.cmbNetwork.selIndex = 1;
 		winform.outboundConfig.network = "tcp";
@@ -80,13 +80,13 @@ winform.cmbProtocol.onProtocolChange = function(){
 		}
 		winform.cmbNetwork.selIndex = 1;
 		winform.outboundConfig.network = "origin";
-		
+
 		winform.cmbSecurity.items = {
-			"none";"table";"rc4";"rc4-md5-6";"rc4-md5";"aes-128-cfb";"aes-192-cfb";"aes-256-cfb";"aes-128-ctr";"aes-192-ctr";"aes-256-ctr";"camellia-128-cfb";"camellia-192-cfb";"camellia-256-cfb";"bf-cfb";"cast5-cfb";"des-cfb";"idea-cfb";"rc2-cfb";"seed-cfb";"salsa20";"chacha20";"chacha20-ietf";		
+			"none";"table";"rc4";"rc4-md5-6";"rc4-md5";"aes-128-cfb";"aes-192-cfb";"aes-256-cfb";"aes-128-ctr";"aes-192-ctr";"aes-256-ctr";"camellia-128-cfb";"camellia-192-cfb";"camellia-256-cfb";"bf-cfb";"cast5-cfb";"des-cfb";"idea-cfb";"rc2-cfb";"seed-cfb";"salsa20";"chacha20";"chacha20-ietf";
 		}
 
 		winform.cmbSecurity.selIndex = 1;
-		winform.outboundConfig.security = "none";  
+		winform.outboundConfig.security = "none";
 		winform.btnUpdateCore.text = '下载 / 更新支持组件： SSR Core';
 		winform.editId.setCueBannerText("请输入密码");
 	}
@@ -96,7 +96,7 @@ winform.cmbProtocol.onProtocolChange = function(){
 		}
 		winform.cmbSecurity.selIndex = 1;
 		winform.outboundConfig.security = "none";
-		
+
 		winform.cmbNetwork.items = {
 			"tcp";"ws";"kcp";"h2";"quic";"grpc";
 		}
@@ -111,91 +111,91 @@ winform.cmbProtocol.onProtocolChange = function(){
 		}
 		winform.cmbNetwork.selIndex = 1;
 		winform.outboundConfig.network = "https";
-		
+
 		winform.cmbSecurity.items = {}
-		winform.outboundConfig.security = null;  
-		 
+		winform.outboundConfig.security = null;
+
 		winform.btnUpdateCore.text = '下载 / 更新支持组件： NaïveProxy Core';
 		winform.editId.setCueBannerText("请输入 用户名:密码");
 	}
 	elseif(sel=="socks"){
-		winform.cmbSecurity.items = { }	
+		winform.cmbSecurity.items = { }
 		winform.outboundConfig.security = null;
-		
+
 		winform.cmbNetwork.items = {"tcp";}
 		winform.cmbNetwork.selIndex = 1;
-		winform.outboundConfig.network = "tcp";  
+		winform.outboundConfig.network = "tcp";
 		winform.btnUpdateCore.text = '下载 / 更新支持组件： Xray Core';
 		winform.editId.setCueBannerText("请输入 用户名:密码");
 	}
 	elseif(sel=="http" || sel=="https"){
-		winform.cmbSecurity.items = { }	
+		winform.cmbSecurity.items = { }
 		winform.outboundConfig.security = null;
-		
+
 		winform.cmbNetwork.items = {"tcp";}
 		winform.cmbNetwork.selIndex = 1;
-		winform.outboundConfig.network = "tcp";  
+		winform.outboundConfig.network = "tcp";
 		winform.btnUpdateCore.text = '下载 / 更新支持组件： Xray Core';
 		winform.editId.setCueBannerText("请输入 用户名:密码");
 	}
 	else {
-		winform.cmbSecurity.items = { }	
+		winform.cmbSecurity.items = { }
 		winform.outboundConfig.security = null;
-		
+
 		winform.cmbNetwork.items = {"tcp";}
 		winform.cmbNetwork.selIndex = 1;
 		winform.outboundConfig.network = "tcp";
 		winform.btnUpdateCore.text = '下载 / 更新支持组件： Xray Core';
 		winform.editId.setCueBannerText("请输入密码");
-	} 
+	}
 }
 
-winform.cmbProtocol.onListChange = function(){ 
-	winform.cmbProtocol.onProtocolChange(); 
+winform.cmbProtocol.onListChange = function(){
+	winform.cmbProtocol.onProtocolChange();
 
 	table.define(winform.outboundConfig);
-	winform.outboundConfig.protocol = winform.cmbProtocol.selText;;
+	winform.outboundConfig.protocol = winform.cmbProtocol.selText;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.cmbNetwork.onListChange = function(){ 
+winform.cmbNetwork.onListChange = function(){
 	var sel = winform.cmbNetwork.selText;
 	winform.outboundConfig.network = sel;
-	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);	
+	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.cmbSecurity.onListChange = function(){ 
+winform.cmbSecurity.onListChange = function(){
 	var sel = winform.cmbSecurity.selText;
 	winform.outboundConfig.security = sel;
-	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);	
+	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
-	
+
 winform.editId.editBox.onChange = function(){
     if( winform.outboundConfig.id == winform.editId.text ){
     	return;
     }
-      
-	winform.outboundConfig.id = winform.editId.text; 
+
+	winform.outboundConfig.id = winform.editId.text;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.editPort.editBox.onChange = function(){  
+winform.editPort.editBox.onChange = function(){
 	winform.outboundConfig.port = tonumber(owner.text):443;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.editAddress.editBox.onChange = function(){  
+winform.editAddress.editBox.onChange = function(){
 	winform.outboundConfig.address = owner.text;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
 }
 
-winform.editPs.editBox.onChange = function(){  
+winform.editPs.editBox.onChange = function(){
 	winform.outboundConfig.ps = owner.text;
 	winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 	winform.updateSharedLink();
@@ -207,133 +207,133 @@ var editOutboundTip = {
 	aid = {"额外ID(alterId)";"数值,仅用于VMESS协议，与服务器一致即可"};
 	network = {"传输协议(network)";"可选值为tcp,ws等，也可以放 SSR 的 protocol 值"};
 	net = {"传输协议(network)";"可选值为tcp,ws等"};
-	type = {"伪装类型";"默认的可选值为none,http等,kcp或quic此字段表示header.type，可选值为 none,srtp,utp,wechat-video,dtls,wireguard"}; 
-	ps = {"备注";"备注"}; 
-	tls = {"是否启用TLS";"可选值为tls,xtls或空值,vless协议省略时默认值为tls"}; 
-	path = {"请求路径";"用于ws,http等协议指定请求路径"}; 
-	httpMethod = {"HTTP请求方法";"用于http协议指定请求方法"}; 
-	headers = {"HTTP请求头";"用于ws,http等协议指定请求头"}; 
-	id = {"密码";"服务器密码"}; 
-	host = {"主机名";"用于指定http,ws等协议请求头中的主机名"}; 
-	protocol = {"协议";"可选值为 vmess,vless,shadowsocks,trojan,trojan-go 之一"}; 
-	port = {"端口";"服务器端口,数值"}; 
+	type = {"伪装类型";"默认的可选值为none,http等,kcp或quic此字段表示header.type，可选值为 none,srtp,utp,wechat-video,dtls,wireguard"};
+	ps = {"备注";"备注"};
+	tls = {"是否启用TLS";"可选值为tls,xtls或空值,vless协议省略时默认值为tls"};
+	path = {"请求路径";"用于ws,http等协议指定请求路径"};
+	httpMethod = {"HTTP请求方法";"用于http协议指定请求方法"};
+	headers = {"HTTP请求头";"用于ws,http等协议指定请求头"};
+	id = {"密码";"服务器密码"};
+	host = {"主机名";"用于指定http,ws等协议请求头中的主机名"};
+	protocol = {"协议";"可选值为 vmess,vless,shadowsocks,trojan,trojan-go 之一"};
+	port = {"端口";"服务器端口,数值"};
 	security = {"加密方式";"可省略,vmess协议默认为auto,vless协议默认为none"};
-	sni = {"TLS服务器名";"TLS客户端请求中的服务器名字段,如果不指定则默认取host或address字段值。"}; 
-	flow = {"流控";"目前仅用于选择 XTLS 的算法,省略时默认值为xtls-rprx-direct"}; 
+	sni = {"TLS服务器名";"TLS客户端请求中的服务器名字段,如果不指定则默认取host或address字段值。"};
+	flow = {"流控";"目前仅用于选择 XTLS 的算法,省略时默认值为xtls-rprx-direct"};
 	grpcSni = {"gRPC的ServiceName";"gRPC传输方式的ServiceName"};
-	obfs = {"混淆插件";"可选值：plain,http_simple,http_post,tls1.2_ticket_auth ..."}; 
-	obfsParam = {"混淆参数";"SSR 里的 obfs_param"}; 
-	networkParam = {"SSR网络协议参数";"SSR 里的 protocol_param"}; 
-	concurrency = {"Mux多路复用:最大并发连接数";"最小值1，最大值1024，特殊值-1，不加载mux模块。缺省由WinXray根据连接协议自动设定此值。"}; 
+	obfs = {"混淆插件";"可选值：plain,http_simple,http_post,tls1.2_ticket_auth ..."};
+	obfsParam = {"混淆参数";"SSR 里的 obfs_param"};
+	networkParam = {"SSR网络协议参数";"SSR 里的 protocol_param"};
+	concurrency = {"Mux多路复用:最大并发连接数";"最小值1，最大值1024，特殊值-1，不加载mux模块。缺省由WinXray根据连接协议自动设定此值。"};
 }
 
 winform.editOutbound.wndproc = function(hwnd,message,wParam,lParam){
 	if(message == 0x202/*_WM_LBUTTONUP*/){
 		var lineIndex = winform.editOutbound.lineFromChar();
 		if(lineIndex == winform.editOutbound.preLineIndex){
-			return; 
+			return;
 		}
 		winform.editOutbound.preLineIndex = lineIndex;
-		
+
 		var line = winform.editOutbound.lineText();
-		var n,v = string.match(line,`^\s*\"(\w+)\"\s*\:\s*(%"")[\,\s]*$`); 
+		var n,v = string.match(line,`^\s*\"(\w+)\"\s*\:\s*(%"")[\,\s]*$`);
 		if( !n ) n,v = string.match(line,`^\s*\"(\w+)\"\s*\:\s*(\d+)[\,\s]*$`);
 		if( !n ) n,v = string.match(line,`^\s*\"(\w+)\"\s*\:\s*\{`);
 		if(editOutboundTip[n]){
 			winform.editOutbound.showInfoTip(editOutboundTip[n][1],editOutboundTip[n][2])
 		}
-	} 
+	}
 }
-	
+
 import win.ui.menu;
-var insertFieldMenu = { 
+var insertFieldMenu = {
 	{ "允许忽略证书:allowInsecure";
 		function(id){
 			winform.addOutboundField("allowInsecure",true);
-		} 
+		}
 	};
 	{ "TLS服务器名:sni";
 		function(id){
 			winform.addOutboundField("sni","");
-		} 
+		}
 	};
 	{ "启用TLS:tls";
 		function(id){
 			winform.addOutboundField("tls","xtls");
-		} 
+		}
 	};
 	{ "流控:flow";
 		function(id){
 			winform.addOutboundField("flow","xtls-rprx-direct");
-		} 
+		}
 	};
 	{ "多路复用最大连接:concurrency";
 		function(id){
 			winform.addOutboundField("concurrency",4);
-		} 
+		}
 	};
 
 	{ "伪装类型:type";
 		function(id){
 			winform.addOutboundField("type","http");
-		} 
+		}
 	};
 	{ "备注:ps";
 		function(id){
 			winform.addOutboundField("ps","");
-		} 
+		}
 	};
 	{ "请求主机名:host";
 		function(id){
 			winform.addOutboundField("host","");
-		} 
+		}
 	};
 	{ "请求路径:path";
 		function(id){
 			winform.addOutboundField("path","/");
-		} 
+		}
 	};
 	{ "HTTP请求方法:httpMethod";
 		function(id){
 			winform.addOutboundField("httpMethod","GET");
-		} 
+		}
 	};
 	{ "HTTP请求头:headers";
 		function(id){
 			winform.addOutboundField("headers",{method="GET"});
-		} 
+		}
 	};
 	{ "SS混淆插件:obfs";
 		function(id){
 			winform.addOutboundField("obfs","plain","");
-		} 
+		}
 	};
 	{ "SSR混淆参数:obfsParam";
 		function(id){
 			winform.addOutboundField("obfsParam","");
-		} 
+		}
 	};
 	{ "SSR网络协议参数:networkParam";
 		function(id){
 			winform.addOutboundField("networkParam","");
-		} 
+		}
 	};
 	{ "绑定的订阅网址:subscribeUrl";
 		function(id){
-			winform.addOutboundField("subscribeUrl","https://"); 
-		} 
+			winform.addOutboundField("subscribeUrl","https://");
+		}
 	};
 	{ "允许自动测试并连接:autoConnect";
 		function(id){
-			winform.addOutboundField("autoConnect",false); 
-		} 
+			winform.addOutboundField("autoConnect",false);
+		}
 	};
 	{ "SSH管理端口:sshPort";
 		function(id){
 			winform.addOutboundField("sshPort",22);
-		} 
-	}; 
-} 
+		}
+	};
+}
 winform.editOutbound.enablePopMenu({
 	{ "插入配置字段";insertFieldMenu}
 })
@@ -343,7 +343,7 @@ winform.btnInsertField.skin(style.transButton)
 winform.btnInsertField.oncommand = function(id,event){
 	var popInsertFieldMenu = win.ui.popmenu(winform);
 	popInsertFieldMenu.addTable(insertFieldMenu);
-	
+
 	var x,y,cx,cy = winform.btnInsertField.getPos();
 	popInsertFieldMenu.popup(x,y+cy);
 }
@@ -351,56 +351,56 @@ winform.btnInsertField.oncommand = function(id,event){
 import win.debounce;
 var onEditChange = win.debounce(
 	function(){
-		var data,err = web.json.tryParse(winform.editOutbound.text); 
+		var data,err = web.json.tryParse(winform.editOutbound.text);
 		if(!data){
 			if(err){
-				return winform.editOutbound.showErrorTip("JSON 语法错误",err)	
+				return winform.editOutbound.showErrorTip("JSON 语法错误",err)
 			}
 			return;
 		}
-		
+
 		var editPortChange = winform.editPort.editBox.onChange;
 		var editIdChange = winform.editId.editBox.onChange;
 		var editAddressChange = winform.editAddress.editBox.onChange;
 		var editPsChange = winform.editPs.editBox.onChange;
-		
+
 		winform.editPort.editBox.onChange = null;
 		winform.editId.editBox.onChange = null;
 		winform.editAddress.editBox.onChange = null;
 		winform.editPs.editBox.onChange = null;
-		
+
 		winform.editPort.text = data.port;
 		winform.editId.text = data.id;
 		winform.editAddress.text = data.address;
 		winform.editPs.text = data.ps;
-		
+
 		winform.editPort.editBox.onChange = editPortChange;
 		winform.editId.editBox.onChange = editIdChange;
 		winform.editAddress.editBox.onChange = editAddressChange;
 		winform.editPs.editBox.onChange = editPsChange;
-		
+
 		var cmbNetworkChange = winform.cmbNetwork.onListChange;
 		var cmbProtocolChange = winform.cmbProtocol.onListChange;
 		var cmbSecurityChange = winform.cmbSecurity.onListChange;
-		
+
 		winform.cmbNetwork.onListChange = null;
 		winform.cmbProtocol.onListChange = null;
 		winform.cmbSecurity.onListChange = null;
-		
+
 		winform.cmbNetwork.selText = data.network;
 		winform.cmbProtocol.selText = data.protocol;
 		winform.cmbProtocol.onProtocolChange();
 		winform.cmbSecurity.selText = data.security;
-		
+
 		winform.cmbNetwork.onListChange = cmbNetworkChange;
 		winform.cmbProtocol.onListChange = cmbProtocolChange;
 		winform.cmbSecurity.onListChange = cmbSecurityChange;
-		
-		winform.updateSharedLink();		
-	},500
-)	
 
-winform.editOutbound.onChange = function(){  
+		winform.updateSharedLink();
+	},500
+)
+
+winform.editOutbound.onChange = function(){
 	onEditChange();
 }
 
@@ -408,24 +408,24 @@ winform.btnSaveOutbound.oncommand = function(id,event){
 	if(!#winform.editAddress.text){
 		return winform.editAddress.editBox.showErrorTip("配置错误","服务器地址不能为空")
 	}
-	
+
 	if(!#winform.editPort.text){
 		return winform.editPort.editBox.showErrorTip("配置错误","端口不能为空")
 	}
-	
+
 	if( !#winform.editId.text ){
 		var protocol = winform.outboundConfig.protocol;
 		if((protocol!="socks") && (protocol!="http") && (protocol!="https")){
 			return winform.editId.editBox.showErrorTip("配置错误","当前代理协议密码不能为空")
-		}  
+		}
 	}
-	
+
 	table.assign(winform.origOutboundConfig,winform.outboundConfig);
 	winform.endModal();
-	
+
 	publish("uiCommand.restartxrayCore");
 	publish("outbounds.updateConfigJson");
-	
+
 }
 
 import config;
@@ -433,23 +433,23 @@ winform.btnAddOutbound.oncommand = function(id,event){
 	if(!#winform.editAddress.text){
 		return winform.editAddress.editBox.showErrorTip("配置错误","服务器地址不能为空")
 	}
-	
+
 	if(!#winform.editPort.text){
 		return winform.editPort.editBox.showErrorTip("配置错误","端口不能为空")
 	}
-	
+
 	if(!#winform.editId.text  ){
 		var protocol = winform.outboundConfig.protocol
 		if( (protocol!="socks") && (protocol!="http") && (protocol!="https") ){
 			return winform.editId.editBox.showErrorTip("配置错误","当前代理协议密码不能为空")
 		}
 	}
-	
-	table.push(config.proxy.outbounds,winform.outboundConfig); 
+
+	table.push(config.proxy.outbounds,winform.outboundConfig);
 	winform.endModal();
 
 	publish("uiCommand.restartxrayCore");
-	publish("outbounds.updateConfigJson"); 
+	publish("outbounds.updateConfigJson");
 }
 
 import win.guid;
@@ -463,7 +463,7 @@ winform.btnGenGuid.oncommand = function(id,event){
 	}
 	else {
 		var guid = win.guid.create();
-		winform.editId.text = string.lower( tostring(guid) );	
+		winform.editId.text = string.lower( tostring(guid) );
 	}
 }
 winform.btnGenGuid.skin(style.link)
@@ -474,21 +474,21 @@ winform.btnSaveOutbound.disabled = true;
 
 import qrencode.bitmap;
 import xray.outbounds;
-winform.updateSharedLink = function(modified){ 
+winform.updateSharedLink = function(modified){
 	var cfg = winform.outboundConfig;
 	var link = "";
-	 
+
 	if(#cfg.address && (cfg.port!==null) && #cfg.protocol){
 		link = xray.outbounds.exportSharedLinks({winform.outboundConfig});
 	}
-	
+
 	winform.editSharedLink.text = link;
-	
-	if(#link){ 
+
+	if(#link){
 		var qrBmp = qrencode.bitmap(link,0,0);
-		if(qrBmp){ 
-			winform.qrPicture.setBackground(qrBmp.copyBitmap(winform.qrPicture.width));   
-		} 
+		if(qrBmp){
+			winform.qrPicture.setBackground(qrBmp.copyBitmap(winform.qrPicture.width));
+		}
 	}
 }
 
@@ -496,24 +496,24 @@ import win.clip;
 winform.btnImportSharedLink.skin(style.link);
 winform.btnImportSharedLink.oncommand = function(id,event){
 	var str = ..win.clip.read();
-	if(str){   
+	if(str){
 		var outbounds = xray.outbounds.importFromString(str);
 		if(#outbounds){
 			var cfg = winform.outboundConfig;
 			table.clear(cfg);
 			table.assign(cfg,outbounds[1]);
-			
+
 			winform.editOutbound.text = web.json.stringify(winform.outboundConfig,true,false);
 			onEditChange();
-	
-			winform.msgOk("已成功导入服务器",1000); 
-			return; 
+
+			winform.msgOk("已成功导入服务器",1000);
+			return;
 		}
 	}
 
 	winform.msgFrown('未导入服务器！\r\n请先复制以下格式文本（自动清除其中的无效内容）：\r\n\r\n1、分享链接或服务器JSON配置。\r\n支持 vmess://，vless://，ss://，ssr://，trojan://， trojan-go:// 等通用分享链接。\r\n\r\n2、服务器配置的JSON数组,支持WinXray格式以及通用格式JSON。\r\n其他 BASE64 编码或明文返回以上1、2条规定的配置或分享链接。')
 }
- 
+
 winform.btnCopySharedLink.skin(style.link)
 winform.btnCopySharedLink.oncommand = function(id,event){
 	var lnk = winform.editSharedLink.text;
@@ -523,14 +523,14 @@ winform.btnCopySharedLink.oncommand = function(id,event){
 	else {
 		win.clip.write(lnk);
 		winform.msgOk("分享链接已复制到剪贴板",1500);
-	} 	
+	}
 }
 
 
 winform.setOutboundConfig = function(cfg){
     winform.cmbProtocol.selText = cfg.protocol;
 	winform.cmbProtocol.onListChange();
-	
+
 	winform.btnAddOutbound.skin(style.button);
 	winform.btnSaveOutbound.skin(style.primaryButton);
 	winform.btnSaveOutbound.disabled = false;
@@ -550,10 +550,10 @@ winform.btnSaveOutbound.skin(style.button);
 winform.btnSaveOutbound.disabled = true;
 
 winform.btnUpdateCore.skin(style.plainButton)
-winform.btnUpdateCore.oncommand = function(id,event){ 
+winform.btnUpdateCore.oncommand = function(id,event){
 	winform.btnUpdateCore.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'};
 	var sel = winform.cmbProtocol.selText;
-	
+
 	if(sel=="ssr"){
 		import xray.core.ssr;
 		var versionTag = xray.core.ssr.updateCore();
@@ -564,7 +564,7 @@ winform.btnUpdateCore.oncommand = function(id,event){
 		}
 		else {
 			winform.btnUpdateCore.disabledText = null;
-		} 	
+		}
 	}
 	elseif(sel=="vless"){
 		import xray.core.v2ray;
@@ -577,7 +577,7 @@ winform.btnUpdateCore.oncommand = function(id,event){
 		else {
 			winform.btnUpdateCore.disabledText = null;
 			winform.msgErr("v2ray Core 下载失败！");
-		} 	
+		}
 	}
 	elseif(sel=="naive"){
 		import xray.core.naive;
@@ -590,8 +590,8 @@ winform.btnUpdateCore.oncommand = function(id,event){
 		else {
 			winform.btnUpdateCore.disabledText = null;
 			winform.msgErr("NaÏveProxy Core 下载失败！");
-		} 		
-	}	
+		}
+	}
 	else {
 		import xray.core;
 		var versionTag = xray.core.updateCore();
@@ -603,14 +603,14 @@ winform.btnUpdateCore.oncommand = function(id,event){
 		else {
 			winform.btnUpdateCore.disabledText = null;
 			winform.msgErr("xray Core 下载失败！");
-		} 
+		}
 	}
 }
 
 winform.qrPicture.skin(
-	foreground = { 
-		hover = 0x10FFFF00; 
-		active = 0x20EEEE00; 
+	foreground = {
+		hover = 0x10FFFF00;
+		active = 0x20EEEE00;
 	}
 )
 winform.qrPicture.oncommand = function(id,event){
@@ -618,8 +618,8 @@ winform.qrPicture.oncommand = function(id,event){
     if(#lnk){
     	var frmChild = winform.loadForm("\forms\main\tools\qr.aardio");
 		frmChild.createQrCode(lnk);
-		frmChild.show();	
-    }	
+		frmChild.show();
+    }
 }
 
 winform.show();

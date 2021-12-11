@@ -40,32 +40,32 @@ uiLanguage = {
 
 import win.ui.grid;
 var grid = win.ui.grid(winform.listview);
-	
+
 var reloadItemData = function(){
-	thread.invoke( 
+	thread.invoke(
 		function(uiLanguage,winform,grid){
 			winform.plusLoading.hide = false;
 			winform.plusSearch.hide = true;
 			winform.listview.hide = true;
-			winform.plusLoading.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'} 
-			
+			winform.plusLoading.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'}
+
 			import sys.networkIsolation;
 			var exemptApps = sys.networkIsolation.getLoopbackState();
 			var dataTable = sys.networkIsolation.getAppContainers();
-			
+
 			var word = string.trim(winform.plusSearch.text);
 			if(#word){
 				word = "@@" + word;
 				dataTable = table.filter(dataTable
-					,lambda(v) string.find(v.displayName,word) || string.find(v.appContainerName,word)|| string.find(v.description,word) ) 
-					
+					,lambda(v) string.find(v.displayName,word) || string.find(v.appContainerName,word)|| string.find(v.description,word) )
+
 			}
-			
+
 			for(k,app in dataTable){
 				app.loopback = exemptApps[app.sid]?uiLanguage.enabled:uiLanguage.disabled;
 			}
-			
-			
+
+
 			dataTable.fields = {"displayName","appContainerName","loopback","sid"}
 			if(grid.sortCloumn){
 				var name = dataTable.fields[grid.sortCloumn];
@@ -73,31 +73,31 @@ var reloadItemData = function(){
 					if(!grid.sortDesc){
 						table.sort(dataTable,function(b){
 							return owner[name] < b[name]
-						})	
+						})
 					}
 					else {
 						table.sort(dataTable,function(b){
 							return owner[name] > b[name]
 						})
-					}	
-				}				
+					}
+				}
 			}
-				
-			grid.setTable( dataTable ) 
+
+			grid.setTable( dataTable )
 			sleep(300);
-			
+
 			winform.plusLoading.disabledText = null;
 			winform.plusLoading.hide = true;
 			winform.listview.hide = false;
-			winform.plusSearch.hide = false; 
-			
+			winform.plusSearch.hide = false;
+
 			winform.resize();
-			
+
 		},uiLanguage,winform,grid
 	)
-} 
+}
 
-grid.onSortColumn = function(cloumn,desc){ 
+grid.onSortColumn = function(cloumn,desc){
 	grid.sortDesc = desc;
 	grid.sortCloumn = cloumn ;
 	reloadItemData();
@@ -106,10 +106,10 @@ grid.onSortColumn = function(cloumn,desc){
 
 grid.onEditChanged = function(text,iItem,iSubItem){
 	return false; //禁止编辑
-} 
+}
 
-winform.adjust = function( cx,cy,wParam ) {	 
-	winform.listview.fillParent(); 
+winform.adjust = function( cx,cy,wParam ) {
+	winform.listview.fillParent();
 };
 
 import win.debounce;
@@ -118,61 +118,61 @@ winform.plusSearch.editBox.onChange = win.debounce(function(){
 })
 
 import  sys.networkIsolation
-var exemptUwpApp = function(exempted){ 
+var exemptUwpApp = function(exempted){
 	var sidConfigs  = {};
-	for item,sid in winform.listview.eachSelected(4){ 
+	for item,sid in winform.listview.eachSelected(4){
 		sidConfigs[sid] = exempted;
-	} 
+	}
 	sys.networkIsolation.enableLoopback(sidConfigs);
-	
+
 	var exemptApps = sys.networkIsolation.getLoopbackState();
 	for item,sid in winform.listview.eachSelected(4){
-		winform.listview.setItemText( exemptApps[sid]?uiLanguage.enabled:uiLanguage.disabled,item,3); 
+		winform.listview.setItemText( exemptApps[sid]?uiLanguage.enabled:uiLanguage.disabled,item,3);
 	}
 }
 
 import com.shell;
-winform.listview.onnotify = function(id,code,ptr){ 
-	
-	select(code) { 
+winform.listview.onnotify = function(id,code,ptr){
+
+	select(code) {
 		case 0xFFFFFFFB/*_NM_RCLICK*/  {
-			
+
 			var x,y = win.getCursorPos();
 			winform.popmenu = win.ui.popmenu(winform);
-			
+
 			if(1===#winform.listview.selected){
 				var item,path = winform.listview.getSelection(,2);
-				winform.popmenu.add(uiLanguage.run,function(id){ 
+				winform.popmenu.add(uiLanguage.run,function(id){
 					import com.shell;
 					com.shell.activateApp(path+"!App");
-				});	
+				});
 			}
-		
-			winform.popmenu.add(uiLanguage.allowLocalhostLoopback,function(id){ 
+
+			winform.popmenu.add(uiLanguage.allowLocalhostLoopback,function(id){
 				exemptUwpApp(true);
 			});
 
-			winform.popmenu.add(uiLanguage.disableLocalhostLoopback,function(id){ 
+			winform.popmenu.add(uiLanguage.disableLocalhostLoopback,function(id){
 				exemptUwpApp(false);
-			});		
-	
+			});
+
 			winform.popmenu.popup(x,y,true);
 		}
-	} 
+	}
 }
 
 winform.btnAllowLocalhostLoopback.skin({
 	background={
 		default=0x669BCC9B;
 		hover=0xFF928BB3;
-		disabled=0xFFCCCCCC; 
+		disabled=0xFFCCCCCC;
 	}
 })
 winform.btnAllowLocalhostLoopback.oncommand = function(id,event){
 	var sidConfigs  = {};
-	for item,sid in winform.listview.each(0,0,4){ 
+	for item,sid in winform.listview.each(0,0,4){
 		sidConfigs[sid] = true;
-	} 
+	}
 	sys.networkIsolation.enableLoopback(sidConfigs);
 	reloadItemData();
 }
@@ -181,14 +181,14 @@ winform.btnDisableLocalhostLoopback.skin({
 	background={
 		default=0x66FFA07D;
 		hover=0xFF928BB3;
-		disabled=0xFFCCCCCC; 
+		disabled=0xFFCCCCCC;
 	}
 })
 winform.btnDisableLocalhostLoopback.oncommand = function(id,event){
 	var sidConfigs  = {};
-	for item,sid in winform.listview.each(0,0,4){ 
+	for item,sid in winform.listview.each(0,0,4){
 		sidConfigs[sid] = false;
-	} 
+	}
 	sys.networkIsolation.enableLoopback(sidConfigs);
 	reloadItemData();
 }
@@ -206,19 +206,19 @@ var setUiLanguage = function(lang){
 	winform.btnAllowLocalhostLoopback.text = uiLanguage.exemptAll;
 	winform.btnDisableLocalhostLoopback.text = uiLanguage.exemptNone;
 	winform.tip.text = uiLanguage.tip;
-	
+
 	winform.listview.clear(true);
-	winform.listview.insertColumn(uiLanguage.displayName,300)  
-	winform.listview.insertColumn(uiLanguage.packageName,300) 
-	winform.listview.insertColumn(uiLanguage.localhost,80) 
-	winform.listview.insertColumn("SID",-2) 
+	winform.listview.insertColumn(uiLanguage.displayName,300)
+	winform.listview.insertColumn(uiLanguage.packageName,300)
+	winform.listview.insertColumn(uiLanguage.localhost,80)
+	winform.listview.insertColumn("SID",-2)
 	winform.plusSearch.setCueBannerText(uiLanguage.searchCueBannerText)
 }
 
 var lcid = ::Kernel32.GetUserDefaultLCID()
 if( lcid==1028 || lcid == 3076 || lcid == 5124 ){
-	import string.conv; 
-	setUiLanguage(table.map(uiLanguage,lambda(v) string.conv.traditionalized(v)) ) 
+	import string.conv;
+	setUiLanguage(table.map(uiLanguage,lambda(v) string.conv.traditionalized(v)) )
 }
 else {
 	setUiLanguage(uiLanguage);
@@ -226,9 +226,9 @@ else {
 
 reloadItemData();
 
-winform.plusSearch.editBox.onOk = function(){ 
+winform.plusSearch.editBox.onOk = function(){
     reloadItemData();
-    return true; 	
+    return true;
 }
 
 winform.show();

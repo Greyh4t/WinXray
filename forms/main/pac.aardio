@@ -32,7 +32,7 @@ winform.btnReset.skin(style.button);
 winform.btnAddDomain.skin(style.button);
 winform.btnDeleteDomain.skin(style.button);
 winform.radioDirect.skin(style.radio);
-winform.radioProxy.skin(style.radio); 
+winform.radioProxy.skin(style.radio);
 winform.radioProxy.checked = true;
 
 import config;
@@ -48,12 +48,12 @@ tbs.skin({
 		hover=0xFFCCCCCC;
 	};
 	checked={
-		foreground={ 
-			default=0x00FFFFFF; 
+		foreground={
+			default=0x00FFFFFF;
 		};
-		border = { 
-			default = {left=1;right=1;bottom=1;color=0xFF008000} 
-		}; 
+		border = {
+			default = {left=1;right=1;bottom=1;color=0xFF008000}
+		};
 	}
 });
 
@@ -69,7 +69,7 @@ tbs.onSelchange = function(idx,strip,form){
 		winform.editPacProxy.hide = true;
 		winform.editPacDirect.hide = false;
 		winform.lbTip.text = `以下域名不使用代理（ 点域名绑定上面选项，点击右键菜单可批量导入直连域名 ）： `
-	}	
+	}
 }
 tbs.selIndex = 1;
 
@@ -83,18 +83,18 @@ winform.loadPacToEdit = function(str,fromUpdater){
 	rules = web.json.parse(rules);
 	if(!(rules && table.isArray(rules) && type(rules[1][1])==type.table)) return winform.msgErr("PAC文件格式错误");
 
-	var proxy,direct = table.array(),table.array() 
+	var proxy,direct = table.array(),table.array()
 	for(i=1;#rules){
 		table.append(direct,rules[i][1]);
 		table.append(proxy,rules[i][2]);
 	}
-	
+
 	if(fromUpdater && !..table.find(proxy,"91.108.56.0/22") ){
 		// https://ipinfo.io/AS44907 https://ipinfo.io/AS59930 https://ipinfo.io/AS62041
 		table.push(proxy,
-			"149.154.160.0/22", 
+			"149.154.160.0/22",
             "149.154.164.0/22",
-            "149.154.172.0/22", 
+            "149.154.172.0/22",
             "91.108.4.0/22",
             "91.108.20.0/22",
             "91.108.56.0/22",
@@ -111,10 +111,10 @@ winform.loadPacToEdit = function(str,fromUpdater){
 
 winform.btnUpdate.oncommand = function(id,event){
 	winform.btnUpdate.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'};
-	
-	thread.invoke( 
-		function(winform){ 
-			import web.rest.github; 
+
+	thread.invoke(
+		function(winform){
+			import web.rest.github;
 			var result = web.rest.github.getContent("petronny","gfwlist2pac","gfwlist.pac");
 			if( result ){
 				var jsTestHost = /***
@@ -124,31 +124,31 @@ function testHost(host, index) {
             for (var j = 0; j < rules[index][i].length; j++) {
                 lastRule = rules[index][i][j];
                 if(host == lastRule || host.endsWith('.' + lastRule) || ( lastRule.indexOf("/") && isInNetEx(host, lastRule) ) ){
-                    return i % 2 == 0 ? 'DIRECT' : proxy; 
+                    return i % 2 == 0 ? 'DIRECT' : proxy;
                 }
             }
         }
-        return;       
+        return;
     }
 
     for (var i = 0; i < rules[index].length; i++) {
         for (var j = 0; j < rules[index][i].length; j++) {
             lastRule = rules[index][i][j];
             if (host == lastRule || host.endsWith('.' + lastRule))
-                return i % 2 == 0 ? 'DIRECT' : proxy; 
+                return i % 2 == 0 ? 'DIRECT' : proxy;
         }
     }
     lastRule = '';
 }
 ***/
 				var result = string.replace(result,"function\s*testHost\s*%\(\)\s*%\{\}",jsTestHost);
-				
+
 				winform.loadPacToEdit( result,true );
 				winform.editPacDirect.modified = true;
 				winform.btnSave.disabled = false;
 				winform.btnReset.disabled = false;
 				winform.msgOk("PAC 已同步到最新版本，请点击「保存 PAC」按钮");
-			}	
+			}
 			else {
 				winform.msgFrown("PAC 更新失败，建议开启全局代理后重试。")
 			}
@@ -171,13 +171,13 @@ winform.savePacToFile = function(){
 		winform.btnSave.disabledText = null;
 		return winform.msgErr("直连域名配置格式错误");
 	}
-		
+
 	xray.pacServer.savePacText(web.json.stringify({{direct;proxy}},true));
-	
+
 	winform.editPacDirect.modified = false;
 	winform.editPacProxy.modified = false;
 	sysProxy.reset(true);
-	
+
 	winform.msgOk("已保存 PAC 文件",1200);
 	winform.btnSave.disabledText = null;
 	winform.btnSave.disabled = true;
@@ -187,11 +187,11 @@ winform.savePacToFile = function(){
 winform.btnSave.oncommand = function(id,event){
 	winform.btnSave.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'};
 
-	thread.invoke( 
+	thread.invoke(
 		function(winform){
 			sleep(300)
 			winform.savePacToFile();
-			
+
 		},winform
 	)
 }
@@ -199,11 +199,11 @@ winform.btnSave.oncommand = function(id,event){
 winform.btnReset.oncommand = function(id,event){
 	winform.btnReset.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'};
 
-	thread.invoke( 
+	thread.invoke(
 		function(winform){
 			import xray.pacServer;
-			winform.loadPacToEdit(xray.pacServer.loadPacText()); 
-			
+			winform.loadPacToEdit(xray.pacServer.loadPacText());
+
 			winform.btnReset.disabledText = null;
 			winform.btnSave.disabled = true;
 			winform.btnReset.disabled = true;
@@ -221,13 +221,13 @@ winform.btnSave.disabled = true;
 winform.btnReset.disabled = true;
 
 winform.editPacDirect.limit = -1;
-winform.editPacDirect.onChange = function(){ 
+winform.editPacDirect.onChange = function(){
 	winform.btnSave.disabled = false;
 	winform.btnReset.disabled = false;
 }
 
 winform.editPacProxy.limit = -1;
-winform.editPacProxy.onChange = function(){ 
+winform.editPacProxy.onChange = function(){
 	winform.btnSave.disabled = false;
 	winform.btnReset.disabled = false;
 }
@@ -241,36 +241,36 @@ winform.editPacDirect.wndproc = function(hwnd,message,wParam,lParam){
 	if(message == 0x202/*_WM_LBUTTONUP*/){
 		var lineIndex = winform.editPacDirect.lineFromChar();
 		if(lineIndex == winform.editPacDirect.preLineIndex){
-			return; 
+			return;
 		}
 		winform.editPacDirect.preLineIndex = lineIndex;
-		
+
 		var line = winform.editPacDirect.lineText();
-		var domain = string.match(line,`\"(.+)\"`); 
-			
+		var domain = string.match(line,`\"(.+)\"`);
+
 		if(domain){
 			winform.editPacDomain.text = domain;
 			winform.radioDirect.checked = true;
 		}
-	} 
+	}
 }
 
 winform.editPacProxy.wndproc = function(hwnd,message,wParam,lParam){
 	if(message == 0x202/*_WM_LBUTTONUP*/){
 		var lineIndex = winform.editPacProxy.lineFromChar();
 		if(lineIndex == winform.editPacProxy.preLineIndex){
-			return; 
+			return;
 		}
 		winform.editPacProxy.preLineIndex = lineIndex;
-		
+
 		var line = winform.editPacProxy.lineText();
-		var domain = string.match(line,`\"(.+)\"`); 
-			
+		var domain = string.match(line,`\"(.+)\"`);
+
 		if(domain){
 			winform.editPacDomain.text = domain;
 			winform.radioProxy.checked = true;
 		}
-	} 
+	}
 }
 
 import win.dlg.findReplace;
@@ -281,90 +281,90 @@ findDlgDirect.onSearch = function(findWhat,down,matchCase,wholeWord){
 }
 
 findDlgDirect.onReplace = function(findWhat,replaceWith,down,matchCase,wholeWord){
-	winform.currentEditPac.replaceText(findWhat,replaceWith,findDlgDirect.flags);		
+	winform.currentEditPac.replaceText(findWhat,replaceWith,findDlgDirect.flags);
 }
 
 findDlgDirect.onReplaceAll = function(findWhat,replaceWith,down,matchCase,wholeWord){
-	winform.currentEditPac.replaceAll(findWhat,replaceWith,findDlgDirect.flags) 
+	winform.currentEditPac.replaceAll(findWhat,replaceWith,findDlgDirect.flags)
 }
 
 winform.editPacDirect.enablePopMenu(function(){
 	var items = {
 		{ "查找	Ctrl + F";
-			function(id){ 
+			function(id){
 				findDlgDirect.find(winform.editPacDirect.selText)
 			}
 		};
 		{ "替换	Ctrl + H";
-			function(id){ 
-				findDlgDirect.replace(winform.editPacDirect.selText);	
+			function(id){
+				findDlgDirect.replace(winform.editPacDirect.selText);
 			}
-		}; 
+		};
 		{};
 		{ "自剪贴板导入直连域名或 CIDR 格式 IP 段";
-			function(id){ 
+			function(id){
 				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text))
 				var direct =  web.json.tryParse(string.conv.fromWide(winform.editPacDirect.text))
 				if(!(proxy)) return winform.msgErr("代理域名配置格式错误");
 				if(!(direct)) return winform.msgErr("直连域名配置格式错误");
-				
+
 				import win.clip;
-				var str = win.clip.read();	
+				var str = win.clip.read();
 				if(!str){
 					return winform.msgWarn("请先复制域名或CIDR格式IP段到剪贴板（支持任意空白分隔符）");
 				}
-				
+
 				var count,ignored = 0,0;
-				for domain in string.gmatch(str,"\w<[\w-_]*\.>+\w{1,8}") { 
-						
+				for domain in string.gmatch(str,"\w<[\w-_]*\.>+\w{1,8}") {
+
 					if(!table.indexOf(proxy,domain) && table.indexOf(direct,domain)  ){
 						ignored++;
 						continue;
 					}
-				
+
 					proxy = table.filter(proxy,lambda(v) v!=domain);
 					if(!table.indexOf(direct,domain)){
 						table.unshift(direct,domain)
 					}
 					count++;
-				} 
-				
+				}
+
 				//CIDR IP
-				for cidrIp in string.gmatch(str,"\d+\.\d+\.\d+\.\d+<\/\d+>*") { 
-						
+				for cidrIp in string.gmatch(str,"\d+\.\d+\.\d+\.\d+<\/\d+>*") {
+
 					if(!table.indexOf(direct,cidrIp) && table.indexOf(proxy,cidrIp)  ){
 						ignored++;
 						continue;
 					}
-				
+
 					direct = table.filter(direct,lambda(v) v!=cidrIp);
 					if(!table.indexOf(proxy,cidrIp)){
 						table.unshift(proxy,cidrIp)
 					}
 					count++;
-				} 
-				
+				}
+
 				winform.editPacProxy.text = web.json.stringify(proxy,true)
 				winform.editPacDirect.text = web.json.stringify(direct,true)
 				winform.editPacProxy.modified = true;
 				winform.editPacDirect.modified = true;
-				winform.msgInfo('已成功导入 '+count+' 个直连域名或 IP 段,\r\n' 
+				winform.msgInfo('已成功导入 '+count+' 个直连域名或 IP 段,\r\n'
 					+ ignored + '个域名已经是直连域名无需添加。\r\n下一步请点下面的「保存PAC」按钮。',1500);
 			}
-		}; 
+		};
 		{ "重置为默认 PAC";
-			function(id){ 
+			function(id){
 				import xray.pacServer;
 				xray.pacServer.resetPac();
 				winform.loadPacToEdit(xray.pacServer.loadPacText());
 			}
-		}; 
+		};
 		{ "恢复为当前使用的 PAC";
-			function(id){ 
+			function(id){
 				import xray.pacServer;
 				winform.loadPacToEdit(xray.pacServer.loadPacText());
 			}
-		}; 
+		};
 	}
 	return items;
 });
@@ -372,80 +372,80 @@ winform.editPacDirect.enablePopMenu(function(){
 winform.editPacProxy.enablePopMenu(function(){
 	var items = {
 		{ "查找	Ctrl + F";
-			function(id){ 
+			function(id){
 				findDlgDirect.find(winform.editPacProxy.selText)
 			}
 		};
 		{ "替换	Ctrl + H";
-			function(id){ 
-				findDlgDirect.replace(winform.editPacProxy.selText);	
+			function(id){
+				findDlgDirect.replace(winform.editPacProxy.selText);
 			}
-		}; 
+		};
 		{};
 		{ "自剪贴板导入代理域名或 CIDR 格式 IP 段";
-			function(id){ 
+			function(id){
 				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text))
 				var direct =  web.json.tryParse(string.conv.fromWide(winform.editPacDirect.text))
 				if(!(proxy)) return winform.msgErr("代理域名配置格式错误");
 				if(!(direct)) return winform.msgErr("直连域名配置格式错误");
-				
+
 				import win.clip;
-				var str = win.clip.read();	
+				var str = win.clip.read();
 				if(!str){
 					return winform.msgWarn("请先复制域名或 CIDR 格式 IP 段到剪贴板（支持任意空白分隔符）");
 				}
-				
+
 				var count,ignored = 0,0;
-				for domain in string.gmatch(str,"\w<[\w-_]*\.>+\w{1,8}") { 
-						
+				for domain in string.gmatch(str,"\w<[\w-_]*\.>+\w{1,8}") {
+
 					if(!table.indexOf(direct,domain) && table.indexOf(proxy,domain)  ){
 						ignored++;
 						continue;
 					}
-				
+
 					direct = table.filter(direct,lambda(v) v!=domain);
 					if(!table.indexOf(proxy,domain)){
 						table.unshift(proxy,domain)
 					}
 					count++;
-				} 
-				
+				}
+
 				//CIDR IP
-				for cidrIp in string.gmatch(str,"\d+\.\d+\.\d+\.\d+<\/\d+>*") { 
-						
+				for cidrIp in string.gmatch(str,"\d+\.\d+\.\d+\.\d+<\/\d+>*") {
+
 					if(!table.indexOf(direct,cidrIp) && table.indexOf(proxy,cidrIp)  ){
 						ignored++;
 						continue;
 					}
-				
+
 					direct = table.filter(direct,lambda(v) v!=cidrIp);
 					if(!table.indexOf(proxy,cidrIp)){
 						table.unshift(proxy,cidrIp)
 					}
 					count++;
-				} 
-				
-				
+				}
+
+
 				winform.editPacProxy.text = web.json.stringify(proxy,true)
 				winform.editPacDirect.text = web.json.stringify(direct,true)
 				winform.editPacProxy.modified = true;
 				winform.editPacDirect.modified = true;
-				winform.msgInfo('已成功导入 '+count+' 个代理域名或 IP 段,\r\n' 
+				winform.msgInfo('已成功导入 '+count+' 个代理域名或 IP 段,\r\n'
 					+ ignored + '个域名已经是代理域名无需添加。\r\n下一步请点下面的「保存PAC」按钮。',1500);
 			}
 		};
-		
+
 		{ "导入所有 Telegram IP";
-			function(id){ 
-				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text)) 
+			function(id){
+				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text))
 				if(!(proxy)) return winform.msgErr("代理域名配置格式错误");
-				
+
 				if( !..table.find(proxy,"91.108.56.0/22") ){
 					// https://ipinfo.io/AS44907 https://ipinfo.io/AS59930 https://ipinfo.io/AS62041
 					table.push(proxy,
-						"149.154.160.0/22", 
+						"149.154.160.0/22",
             			"149.154.164.0/22",
-            			"149.154.172.0/22", 
+            			"149.154.172.0/22",
             			"91.108.4.0/22",
             			"91.108.20.0/22",
             			"91.108.56.0/22",
@@ -453,30 +453,30 @@ winform.editPacProxy.enablePopMenu(function(){
             			"95.161.64.0/20",
             			"91.108.12.0/22"
 					)
-					
+
 					winform.editPacProxy.text = web.json.stringify(proxy,true)
 					winform.msgOk('已成功导入所有 Telegram IP\r\n下一步请点下面的「保存PAC」按钮。')
 				}
 				else {
 					winform.msgWarn("代理 IP 段已包含所有 Telegram IP，不需要重复导入！")
 				}
-				
+
 			}
-		}; 
+		};
 		{ /*分隔符*/ };
 		{ "重置为默认 PAC";
-			function(id){ 
+			function(id){
 				import xray.pacServer;
 				xray.pacServer.resetPac();
 				winform.loadPacToEdit(xray.pacServer.loadPacText());
 			}
-		};  
+		};
 		{ "恢复为当前使用的 PAC";
-			function(id){ 
+			function(id){
 				import xray.pacServer;
 				winform.loadPacToEdit(xray.pacServer.loadPacText());
 			}
-		}; 
+		};
 	}
 	return items;
 });
@@ -485,37 +485,37 @@ winform.editPacProxy.enablePopMenu(function(){
 import win.ui.accelerator;
 var accelerator = win.ui.accelerator({
 
-	{ 
-		ctrl = true; vkey = 'F'#; 
-		oncommand = function() findDlgDirect.find(winform.currentEditPac.selText); 
-	};  
-	
-	{ 
-		ctrl = true; vkey = 'H'#; 
-		oncommand = function() findDlgDirect.replace(winform.currentEditPac.selText); 
-	};  
-	
+	{
+		ctrl = true; vkey = 'F'#;
+		oncommand = function() findDlgDirect.find(winform.currentEditPac.selText);
+	};
+
+	{
+		ctrl = true; vkey = 'H'#;
+		oncommand = function() findDlgDirect.replace(winform.currentEditPac.selText);
+	};
+
 },winform );
 
 winform.btnDeleteDomain.oncommand = function(id,event){
 	var domain = winform.editPacDomain.text;
 	if(!#domain){
 		return winform.editPacDomain.editBox.showErrorTip(,"请先指定域名")
-	}	
-	
+	}
+
 	var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text))
 	var direct =  web.json.tryParse(string.conv.fromWide(winform.editPacDirect.text))
 	if(!(table.isArray(proxy))) return winform.msgErr("代理域名配置格式错误：不是有效的 JSON 数组。");
 	if(!(table.isArray(direct))) return winform.msgErr("直连域名配置格式错误：不是有效的 JSON 数组");
-	
+
 	if(!table.indexOf(proxy,domain) && !table.indexOf(direct,domain)  ){
 		winform.editPacDomain.editBox.showInfoTip(,"PAC 配置不包含此域名")
-		return; 
+		return;
 	}
-	
+
 	direct = table.filter(direct,lambda(v) v!=domain);
 	proxy = table.filter(proxy,lambda(v) v!=domain);
-	
+
 	winform.editPacProxy.text = web.json.stringify(proxy,true);
 	winform.editPacDirect.text = web.json.stringify(direct,true);
 	winform.editPacProxy.modified = true;
@@ -529,37 +529,37 @@ winform.btnAddDomain.oncommand = function(id,event){
 	var direct =  web.json.tryParse(string.conv.fromWide(winform.editPacDirect.text))
 	if(!(table.isArray(proxy))) return winform.msgErr("代理域名配置格式错误：不是有效的JSON数组。");
 	if(!(table.isArray(direct))) return winform.msgErr("直连域名配置格式错误：不是有效的JSON数组");
-	
+
 	var domain = winform.editPacDomain.text;
 	if(!#domain){
 		return winform.editPacDomain.editBox.showErrorTip(,"请先指定域名")
 	}
-	
+
 	if(winform.radioProxy.checked){
 		if(!table.indexOf(direct,domain) && table.indexOf(proxy,domain)  ){
 			winform.editPacDomain.editBox.showWarningTip(,"此域名已经是代理域名，无需添加")
-			return; 
+			return;
 		}
-	
+
 		direct = table.filter(direct,lambda(v) v!=domain);
 		if(!table.indexOf(proxy,domain)){
 			table.unshift(proxy,domain)
 		}
 		winform.editPacDomain.editBox.showInfoTip(,"已添加到代理域名");
 	}
-	else { 
+	else {
 		if(table.indexOf(direct,domain) && !table.indexOf(proxy,domain)  ){
 			winform.editPacDomain.editBox.showWarningTip(,"此域名已经是直连域名，无需添加")
-			return; 
+			return;
 		}
-		
+
 		proxy = table.filter(proxy,lambda(v) v!=domain);
 		if(!table.indexOf(direct,domain)){
 			table.unshift(direct,domain)
-		} 
+		}
 		winform.editPacDomain.editBox.showInfoTip(,"已添加到直连域名");
 	}
-	
+
 	winform.editPacProxy.text = web.json.stringify(proxy,true)
 	winform.editPacDirect.text = web.json.stringify(direct,true)
 	winform.editPacProxy.modified = true;
@@ -570,7 +570,7 @@ winform.btnAddDomain.oncommand = function(id,event){
 winform.onClose = function(hwnd,message,wParam,lParam){
 	if(winform.editPacDirect.modified||winform.editPacProxy.modified){
 		winform.btnUpdate.disabled = true;
-		
+
 		if(!winform.msgAsk("PAC 配置已修改但尚未保存，确定要退出并放弃更改吗？")){
 			return true;
 		}
@@ -590,35 +590,35 @@ winform.onActivate = function(state,hwndOther,minimized){
 		if(#winform.editPacDomain.text){
 			return;
 		}
-		
+
 		var str = win.clip.read();
 		if(str){
-			var domain = string.match(str,"\w<[\w-_]*\.>+\w{1,8}");	
+			var domain = string.match(str,"\w<[\w-_]*\.>+\w{1,8}");
 			if(domain){
 				winform.editPacDomain.text = domain;
-				
-				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text)) 
+
+				var proxy =  web.json.tryParse(string.conv.fromWide(winform.editPacProxy.text))
 				if( (proxy)) {
 					winform.radioProxy.checked = table.indexOf(proxy,domain);
 					winform.radioDirect.checked = !winform.radioProxy.checked;
 				}
 			}
-		} 	
+		}
 	}
 }
 
 import inet.url;
-winform.editPacDomain.editBox.onChange = function(){ 
+winform.editPacDomain.editBox.onChange = function(){
 	var url = owner.text;
 	if(string.startWith(url,"http:",true) || string.startWith(url,"https:",true) ){
 		var tUrl = inet.url.split(url);
 		if(tUrl && #tUrl.host){
 			owner.text =  tUrl.host;
 			owner.setFocus();
-		} 
+		}
 	}
 }
-	
+
 winform.enableDpiScaling();
 winform.show();
 win.loopMessage();

@@ -27,17 +27,17 @@ var frmYoutube;
 winform.btnYoutube.oncommand = function(id,event){
 	if(frmYoutube&&win.isWindow(frmYoutube.hwnd)){
 		if(win.isIconic(frmYoutube.hwnd)){
-			frmYoutube.show(9/*_SW_RESTORE*/);	
+			frmYoutube.show(9/*_SW_RESTORE*/);
 		}
-		
+
 		frmYoutube.show();
 		return;
 	}
-	
+
 	frmYoutube = winform.loadForm("\forms\main\tools\youtube.aardio");
 	frmYoutube.show();
 }
-	
+
 import process;
 winform.btnGitHub.skin(style.plainButton)
 winform.btnGitHub.oncommand = function(id,event){
@@ -45,7 +45,7 @@ winform.btnGitHub.oncommand = function(id,event){
 		winform.msgboxErr("请在发布后运行此功能");
 		return;
 	}
-	
+
 	process.execute(io._exepath,"/github","runas");
 }
 
@@ -55,19 +55,19 @@ winform.btnUpdateSystemTime.oncommand = function(id,event){
 		winform.msgboxErr("请在发布后运行此功能");
 		return;
 	}
-	
+
 	winform.btnUpdateSystemTime.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'}
 	if( process.executeWait(io._exepath,"/updateTime","runas") ){
 		winform.btnUpdateSystemTime.disabledText = null;
 		winform.btnUpdateSystemTime.text = '时间已同步'
-		winform.setTimeout( 
+		winform.setTimeout(
 			function(){
 				winform.btnUpdateSystemTime.text = '同步系统时间（ 修正 Xray 连接报错 ）'
-			},2000) 
+			},2000)
 	}
 	else {
 		winform.btnUpdateSystemTime.disabledText = null;
-	} 
+	}
 }
 
 winform.btnDnsFlush.skin(style.plainButton)
@@ -77,10 +77,10 @@ winform.btnDnsFlush.oncommand = function(id,event){
 	import process.popen;
 	var prcs = process.popen(,"ipconfig /flushdns");
 	var str = prcs.read(-1)
-	
+
 	var dnsapi = ..raw.loadDll("dnsapi.dll");
 	dnsapi.DnsFlushResolverCacheB();
-		
+
 	winform.msgInfo(str);
 	winform.btnDnsFlush.disabledText = null;
 }
@@ -89,17 +89,17 @@ import process;
 winform.editSshHost.setCueBannerText("root@0.0.0.0:22")
 winform.btnSshInstall.skin(style.plainButton)
 winform.btnSshInstall.oncommand = function(id,event){
-	
+
 	if(_STUDIO_INVOKED){
 		winform.msgErr("请在发布后运行此功能");
 		return;
 	}
-	
+
 	config.ui.sshServer = winform.editSshHost.text;
 	config.ui.save();
-	
+
 	winform.btnSshInstall.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'}
-	
+
 	var server = winform.editSshHost.text;
 	if( ! ..string.indexOf(server,"@") ){
 		server = "root@" + server;
@@ -120,12 +120,12 @@ winform.btnSshInstallKey.oncommand = function(id,event){
 		winform.msgErr("请在发布后运行此功能");
 		return;
 	}
-	
+
 	config.ui.sshServer = winform.editSshHost.text;
 	config.ui.save();
-	
+
 	winform.btnSshInstall.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'}
-	
+
 	var server = winform.editSshHost.text;
 	if( ! ..string.indexOf(server,"@") ){
 		server = "root@" + server;
@@ -140,20 +140,20 @@ winform.btnCreateLnk.oncommand = function(id,event){
 	if(_STUDIO_INVOKED){
 		return winform.msgboxErr("请在发布后使用此功能")
 	}
-	
-	import fsys.lnk;  
-	var lnk = fsys.lnk(); 
-	lnk.description = "WinXray(Xray/V2Ray、Shadowsocks、Trojan通用客户端 )"  
-	
+
+	import fsys.lnk;
+	var lnk = fsys.lnk();
+	lnk.description = "WinXray(Xray/V2Ray、Shadowsocks、Trojan通用客户端 )"
+
 	lnk.path = io._exepath //设置目标路径
 	lnk.setIcon(io._exepath,0); //设置图标
-	
+
 	lnk.save(
 		io.getSpecial(0/*_CSIDL_DESKTOP*/,"WinXray.lnk" )
-	) 
-	
+	)
+
 	::Shell32.SHChangeNotify(0x8000000/*_SHCNE_ASSOCCHANGED*/,0,0,0);
-	
+
 	import com;
 	com.CreateObject("Shell.Application").MinimizeAll();
 }
@@ -164,27 +164,27 @@ winform.btnTestSpeed.oncommand = function(id,event){
 	var chromePath = chrome.path();
 	if(!chromePath){
 		winform.msgFrown('抱歉，\r\n测速工具需要调用Chrome或兼容浏览器才能运行，\r\n但是当前系统未找到任何Chrome兼容浏览器！');
-		return; 
+		return;
 	}
-	
+
 	import xray.core;
 	if(!xray.core.socksProxyPort){
 		winform.msgFrown('抱歉，当前未连接到任何代理服务器！');
-		return; 
+		return;
 	}
-	
+
 	winform.btnTestSpeed.disabledText = {'\uF254';'\uF251';'\uF252';'\uF253';'\uF250'}
-	
+
 	var ipip = win.invoke(
 		function(port){
 			import web.rest.client;
 			var restClient = web.rest.client(,"SOCKS=127.0.0.1:"+port);
 			restClient._http.setTimeouts(1000,2000,2000);
 			restClient.get("https://www.google.com/generate_204");
-			var lastStatusCode = restClient.lastStatusCode; 
-				
+			var lastStatusCode = restClient.lastStatusCode;
+
 			if( lastStatusCode == 204 ){
-					
+
 				var ipip,err  = restClient.get("http://myip.ipip.net");
 				if(ipip){
 					ipip = ..string.match(ipip,"\d+\.\d+\.\d+\.\d+\A+");
@@ -192,25 +192,25 @@ winform.btnTestSpeed.oncommand = function(id,event){
 						restClient.close();
 						return "当前代理服务器："+ipip;
 					}
-				} 
-				
+				}
+
 				restClient.close();
 				return null;
 			}
 			restClient.close();
-		},xray.core.socksProxyPort 
+		},xray.core.socksProxyPort
 	)
-	
+
 	if(!ipip){
 		winform.msgFrown('抱歉，当前未连接到任何代理服务器！');
 		winform.btnTestSpeed.disabledText = null;
-		return; 	
+		return;
 	}
-	
+
 	winform.lbCurrentProxyLocation.text = ipip;
-	
+
 	import process
-	process.execute(chromePath,` --proxy-server="SOCKS5://127.0.0.1:`+xray.core.socksProxyPort 
+	process.execute(chromePath,` --proxy-server="SOCKS5://127.0.0.1:`+xray.core.socksProxyPort
 		+`" --user-data-dir="` +io.appData("Temp/WinXray/chrome-socks5")+ `" --app="https://speed.cloudflare.com/"`);
 	winform.btnTestSpeed.disabledText = null;
 }
@@ -219,14 +219,14 @@ onActiveOutbound = function(address){
 	winform.btnTestSpeed.disabled = !address;
 	if(type.isString(address)){
 		winform.lbCurrentProxyLocation.text = "当前活动的代理服务器：" + address;
-	}	
-} 
-	
-subscribe("activeOutbound",function(address){ 
+	}
+}
+
+subscribe("activeOutbound",function(address){
 	onActiveOutbound(address)
 } )
 if(globalActiveOutbound){
-	onActiveOutbound(globalActiveOutbound)	
+	onActiveOutbound(globalActiveOutbound)
 }
 
 winform.btnQrCode.skin(style.plainButton)
@@ -234,7 +234,7 @@ winform.btnQrCode.oncommand = function(id,event){
 
 	var frmChild = winform.loadForm("\forms\main\tools\qr.aardio");
 	frmChild.show();
-	
+
 }
 
 winform.btnUuid.skin(style.plainButton)
@@ -247,14 +247,14 @@ winform.btnDeleteIconCache.skin(style.plainButton)
 winform.btnDeleteIconCache.oncommand = function(id,event){
 	import fsys;
 	import process;
-	
+
 	var explorerPath = process.kill("explorer.exe")
 	if( explorerPath ) {
-		fsys.delete(io.appData("iconcache.db"));  
+		fsys.delete(io.appData("iconcache.db"));
 		process.execute(explorerPath);
-		
+
 		::Shell32.SHChangeNotify(0x8000000/*_SHCNE_ASSOCCHANGED*/,0,0,0);
-	} 
+	}
 }
 
 winform.enableDpiScaling();

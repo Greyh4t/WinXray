@@ -17,23 +17,23 @@ tbVersion={cls="trackbar";left=464;top=690;right=728;bottom=720;db=1;dl=1;dr=1;m
 /*}}*/
 
 winform.tbErrLevel.oncommand = function(id,event,pos){
-     
+
     if( event == 0x8/*_TB_ENDTRACK*/ ){
         pos = winform.tbErrLevel.pos;
         var v = {[0]="L 可纠错7%数据码字";[1]="M 可纠错15%的数据码字";[2]="Q 可纠错25%的数据码字";[3]="H 可纠错30%的数据码字";}
-        winform.lbErrLevel.text = pos +"："+ v[pos];  
+        winform.lbErrLevel.text = pos +"："+ v[pos];
     }
 }
-  
-winform.tbVersion.oncommand = function(id,event,pos){ 
+
+winform.tbVersion.oncommand = function(id,event,pos){
     if( event == 0x8/*_TB_ENDTRACK*/ ){
         pos = winform.tbVersion.pos;
         if(!pos)winform.lbVersion.text = "自动选择版本";
         else {
             var width = ((pos-1)*4)+21;
-            winform.lbVersion.text = string.format("版本:%d 二维码数据大小:%d x %d",pos,width,width );  
+            winform.lbVersion.text = string.format("版本:%d 二维码数据大小:%d x %d",pos,width,width );
         }
-    } 
+    }
 }
 
 import qrencode.bitmap;
@@ -41,7 +41,7 @@ winform.btnQrEnode.oncommand = function(id,event){
     winform.plus.hide = true;
     var qrBmp = qrencode.bitmap(winform.edit.text,winform.tbVersion.pos,winform.tbErrLevel.pos );
     winform.plus.setBackground(qrBmp.copyBitmap(winform.plus.width));
-    
+
     winform.plus.hide = false;
     winform.plus.redraw()
 }
@@ -51,5 +51,5 @@ winform.createQrCode = function(url){
 	winform.btnQrEnode.oncommand();
 }
 
-winform.show() 
+winform.show()
 win.loopMessage();

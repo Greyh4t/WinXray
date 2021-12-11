@@ -5,86 +5,86 @@ import inet.url;
 import crypt;
 
 namespace xray.core.configJson;
-	
+
 write  = function(jsonPath,outbound,sockPort,httpPort){
 	if(!outbound){ return; }
 	if(type(outbound.port)!=type.number){
 		outbound.port = tonumber(outbound.port);
 	}
-	
+
 	var currentCore = ..table.clone(..config.core.default);
 	if(! ..table.isArray(currentCore.outbounds) ){
-		return null,"错误的出站代理服务器配置" 
+		return null,"错误的出站代理服务器配置"
 	}
-	
+
 	var inboundsInCore = currentCore.inbounds;
 	if(! ..table.isArray(inboundsInCore) ){
-		return null,"错误的入站代理服务器配置" 
+		return null,"错误的入站代理服务器配置"
 	}
-	
+
 	var proxyOutboundInCore;
 	for(k,ob in currentCore.outbounds){
 		if(ob.tag == "proxy"){
 			proxyOutboundInCore = ob;
-		} 
+		}
 	}
-	
+
 	if( type(proxyOutboundInCore) !="table"  ){
-		return null,"未找到默认出站代理服务器配置节点" 
+		return null,"未找到默认出站代理服务器配置节点"
 	}
-	
+
 	var socksInbounds,httpInbounds;
 	for(k,ib in currentCore.inbounds){
 		if(ib.tag == "proxy"){
 			socksInbounds = ib;
-			socksInbounds.port = sockPort; 
-		} 
+			socksInbounds.port = sockPort;
+		}
 		elseif(ib.tag == "http_proxy"){
 			httpInbounds = ib;
-			httpInbounds.port = httpPort; 
-		} 
+			httpInbounds.port = httpPort;
+		}
 	}
-		
+
 	if( type(socksInbounds) !="table"  ){
-		return null,"未找到默认 SOCKS 入站代理服务器配置节点" 
+		return null,"未找到默认 SOCKS 入站代理服务器配置节点"
 	}
-	
+
 	if( type(httpInbounds) !="table"  ){
-		return null,"未找到默认 HTTP 入站代理服务器配置节点" 
+		return null,"未找到默认 HTTP 入站代理服务器配置节点"
 	}
-	
+
 	if(#outbound.tls && !outbound.sni){
 		var host = outbound.host;
-		if(..table.isArray(host)){ host = host[1] } 
+		if(..table.isArray(host)){ host = host[1] }
 		outbound.sni = host ? host : outbound.address
 	}
-	
-	if(outbound.protocol=="vless"){ 
+
+	if(outbound.protocol=="vless"){
 		if(!outbound.tls && outbound.port==443) outbound.tls = "tls";
 		if(!outbound.tls) outbound.tls = "tls";
-		
+
 		var mux = (outbound.concurrency !== null) ? {
 			concurrency=outbound.concurrency;
 			enabled=outbound.concurrency ? ( outbound.concurrency > 0)
 		} : {
 			concurrency=8;
 			enabled=true
-		}; 
-			
+		};
+
 		var ob = {
 			mux = outbound.tls != "xtls" ? mux : null;
 			protocol="vless";
-			
+
 			settings={
 				vnext={
 					{
-						address=outbound.address; 
+						address=outbound.address;
 						port=tonumber(outbound.port);
 						users={
-							{  
+							{
 								id=outbound.id;
 								flow=outbound.flow : (outbound.tls == "xtls" ? "xtls-rprx-direct" : null);
-								encryption=( (!#outbound.security) || outbound.security=="auto") ? "none" : outbound.security;  
+								encryption=( (!#outbound.security) || outbound.security=="auto") ? "none" : outbound.security;
 								level=outbound.level : 0;
 							}
 						}
@@ -109,13 +109,13 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			};
 			tag="proxy"
 		};
-		
+
 		if( outbound.network == "ws" ){
 			ob.streamSettings.wsSettings = {
 				path = outbound.path;
 				headers = outbound.headers;
 			}
-			
+
 			if( outbound.host ) {
 				if(!ob.streamSettings.wsSettings.headers){
 					ob.streamSettings.wsSettings.headers = {}
@@ -125,8 +125,8 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 		}
 		elseif( (outbound.network == "http") || (outbound.network == "h2")  ){
 			var host = outbound.host;
-			if(type.isString(host)){host = {host}}; 
-			
+			if(type.isString(host)){host = {host}};
+
 			ob.streamSettings.httpSettings = {
 				path = outbound.path;
 				host = host;
@@ -137,7 +137,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				ob.streamSettings.tcpSettings = {
 					header = {
 						request={
-							headers=..table.assign({ 
+							headers=..table.assign({
 								Connection={
 									"keep-alive"
 								};
@@ -155,13 +155,13 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 							path = outbound.path;
 							version="1.1"
 						};
-						type="http"; 
-					} 
-				} 
+						type="http";
+					}
+				}
 			}
 		}
-		elseif( outbound.network == "kcp" ){ 
-			ob.streamSettings.kcpSettings = { 
+		elseif( outbound.network == "kcp" ){
+			ob.streamSettings.kcpSettings = {
 				congestion = outbound.congestion;
 				seed = outbound.seed;
 				mtu = outbound.mtu;
@@ -175,9 +175,9 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				}
 			}
 		}
-		elseif( outbound.network == "quic" ){ 
+		elseif( outbound.network == "quic" ){
 			ob.streamSettings.kcpSettings = {
-				key = outbound.key; 
+				key = outbound.key;
 				security = outbound.security ? outbound.security : "none";
 				header = {
 					type = outbound.type;
@@ -189,12 +189,12 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				serviceName = outbound.grpcSni;
 			}
 		}
-		
-		..table.assign(proxyOutboundInCore,ob); 
+
+		..table.assign(proxyOutboundInCore,ob);
 	}
 	elseif(outbound.protocol=="vmess"){
 		if(!#outbound.security) outbound.security = "auto";
-			
+
 		var ob = {
 			mux = (outbound.concurrency !== null) ? {
 				concurrency=outbound.concurrency;
@@ -202,7 +202,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			} : {
 				concurrency=8;
 				enabled=true
-			}; 
+			};
 			protocol="vmess";
 			settings={
 				vnext={
@@ -231,13 +231,13 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			};
 			tag="proxy"
 		};
-		
+
 		if( outbound.network == "ws" ){
 			ob.streamSettings.wsSettings = {
 				path = outbound.path;
 				headers = outbound.headers;
 			}
-			
+
 			if( outbound.host ) {
 				if(!ob.streamSettings.wsSettings.headers){
 					ob.streamSettings.wsSettings.headers = {}
@@ -247,8 +247,8 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 		}
 		elseif( (outbound.network == "http") || (outbound.network == "h2")  ){
 			var host = outbound.host;
-			if(type.isString(host)){host = {host}}; 
-			
+			if(type.isString(host)){host = {host}};
+
 			ob.streamSettings.httpSettings = {
 				path = outbound.path;
 				host = host;
@@ -259,7 +259,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				ob.streamSettings.tcpSettings = {
 					header = {
 						request={
-							headers=..table.assign({ 
+							headers=..table.assign({
 								Connection={
 									"keep-alive"
 								};
@@ -277,13 +277,13 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 							path = outbound.path;
 							version="1.1"
 						};
-						type="http"; 
-					} 
-				} 
+						type="http";
+					}
+				}
 			}
 		}
-		elseif( outbound.network == "kcp" ){ 
-			ob.streamSettings.kcpSettings = { 
+		elseif( outbound.network == "kcp" ){
+			ob.streamSettings.kcpSettings = {
 				congestion = outbound.congestion;
 				seed = outbound.seed;
 				mtu = outbound.mtu;
@@ -297,9 +297,9 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				}
 			}
 		}
-		elseif( outbound.network == "quic" ){ 
+		elseif( outbound.network == "quic" ){
 			ob.streamSettings.kcpSettings = {
-				key = outbound.key; 
+				key = outbound.key;
 				security = outbound.security ? outbound.security : "none";
 				header = {
 					type = outbound.type;
@@ -311,8 +311,8 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				serviceName = outbound.grpcSni;
 			}
 		}
-		
-		..table.assign(proxyOutboundInCore,ob); 
+
+		..table.assign(proxyOutboundInCore,ob);
 	}
 	elseif(outbound.protocol=="trojan" || outbound.protocol=="trojan-go"){
 		outbound.tls = #outbound.tls ? outbound.tls : "tls";
@@ -323,7 +323,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			} : {
 				concurrency=-1;
 				enabled=false
-			}; 
+			};
 			protocol="trojan";
 			settings={
 				servers={
@@ -331,17 +331,17 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 						address=outbound.address;
 						email=outbound.email;
 						password=outbound.id;
-						port=outbound.port; 
-						level=outbound.level : 0; 
-						encryption=outbound.security;  
+						port=outbound.port;
+						level=outbound.level : 0;
+						encryption=outbound.security;
 						flow=outbound.flow : (outbound.tls == "xtls" ? "xtls-rprx-direct" : null);
 					}
 				};
 			};
 			streamSettings={
 				network = outbound.network : "tcp";
-				security = #outbound.tls ? outbound.tls : "tls";  
-				
+				security = #outbound.tls ? outbound.tls : "tls";
+
 				tlsSettings =  (outbound.tls === "tls") ? {
 					allowInsecure = !!outbound.allowInsecure;
 					serverName = outbound.sni;
@@ -349,13 +349,13 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			};
 			tag="proxy"
 		};
-		
+
 		if( outbound.network == "ws" ){
 			ob.streamSettings.wsSettings = {
 				path = outbound.path;
 				headers = outbound.headers;
 			}
-			
+
 			if( outbound.host ) {
 				if(!ob.streamSettings.wsSettings.headers){
 					ob.streamSettings.wsSettings.headers = {}
@@ -363,8 +363,8 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				ob.streamSettings.wsSettings.headers.Host = outbound.host;
 			}
 		}
-		..table.assign(proxyOutboundInCore,ob); 
-	} 
+		..table.assign(proxyOutboundInCore,ob);
+	}
 	elseif(outbound.protocol=="shadowsocks"){
 		var ob = {
 			mux = (outbound.concurrency !== null) ? {
@@ -373,7 +373,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			} : {
 				concurrency=-1;
 				enabled=false
-			}; 
+			};
 			protocol="shadowsocks";
 			settings={
 				servers={
@@ -392,11 +392,11 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			};
 			tag="proxy"
 		};
-		
-		..table.assign(proxyOutboundInCore,ob); 
-	} 
+
+		..table.assign(proxyOutboundInCore,ob);
+	}
 	elseif(outbound.protocol=="socks"){
-		
+
 		var ob = {
 			mux = (outbound.concurrency !== null) ? {
 				concurrency=outbound.concurrency;
@@ -404,7 +404,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			} : {
 				concurrency=-1;
 				enabled=false
-			}; 
+			};
 			protocol="socks";
 			settings={
 				servers={
@@ -419,7 +419,7 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			};
 			tag="proxy"
 		};
-			
+
 		if(#outbound.id){
 			var user,password = ..string.match(outbound.id,"([^\:]+)\:(.+)");
 			if(user && password){
@@ -431,17 +431,17 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 			}
 			else{
 				ob.settings.servers[1].users = {
-					user = outbound.id; 
+					user = outbound.id;
 					level = outbound.level : 0;
 				}
 			}
 		}
-		
-		..table.assign(proxyOutboundInCore,ob); 
-	} 
+
+		..table.assign(proxyOutboundInCore,ob);
+	}
 	elseif(outbound.protocol=="https" || outbound.protocol=="http"){
-		
-		var ob = { 
+
+		var ob = {
 			protocol="http";
 			settings={
 				servers={
@@ -452,31 +452,31 @@ write  = function(jsonPath,outbound,sockPort,httpPort){
 				};
 			};
 			streamSettings={
-				security = outbound.protocol=="https"  ? "tls" : "none";  
+				security = outbound.protocol=="https"  ? "tls" : "none";
 				tlsSettings = (outbound.protocol=="https") ? {
 					allowInsecure = !!outbound.allowInsecure;
 				} : null;
 			};
 			tag="proxy"
 		};
-			
+
 		if(#outbound.id){
 			var user,password = ..string.match(outbound.id,"([^\:]+)\:(.+)");
 			if(user && password){
 				ob.settings.servers[1].users = {
 					user = user;
-					password = password; 
+					password = password;
 				}
 			}
 			else{
 				ob.settings.servers[1].users = {
-					user = outbound.id;  
+					user = outbound.id;
 				}
 			}
 		}
-		
-		..table.assign(proxyOutboundInCore,ob); 
-	} 
+
+		..table.assign(proxyOutboundInCore,ob);
+	}
 
 	..string.save(jsonPath,..web.json.stringify(currentCore) );
 	return jsonPath;

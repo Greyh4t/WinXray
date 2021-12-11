@@ -3,38 +3,38 @@ import xray.core;
 namespace xray.core.rules;
 
 var getRulesUrl = function(){
-	var msgDlg = ..win.dlg.message(..mainForm); 
+	var msgDlg = ..win.dlg.message(..mainForm);
 	var form = msgDlg.create('正在获取路由规则最新版本',,true)
 	form.icon = '\uF1D8';
-	form.progress.startProgress(50); 
-	
+	form.progress.startProgress(50);
+
 	var url,tag = ..win.invoke(function(){
     	import process;
 		import inet.http;
 		var http = ..inet.http();
 		var url = http.location("https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest");
 		http.close();
-		
-		if(!url) return;
-		
-		var tag = ..string.match(url,"[^/]+$")
-		if(!tag || (tag=="latest")) return;;
 
-		return "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/" 
-			+ tag + "/rules.zip",tag	
+		if(!url) return;
+
+		var tag = ..string.match(url,"[^/]+$")
+		if(!tag || (tag=="latest")) return;
+
+		return "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/"
+			+ tag + "/rules.zip",tag
 	});
 	form.close();
-    
+
 	return url,tag;
-} 	
+}
 
 
 update = function(){
-    ..mainForm.disabled = true; 
+    ..mainForm.disabled = true;
 
 	var coreDir = ..xray.core.getCoreDir();
 	var url,versionTag = getRulesUrl();
-	if(!url){		
+	if(!url){
 		..mainForm.disabled = false;
 		return null;
 	}
@@ -47,16 +47,16 @@ update = function(){
 		,"/data/download/"
 		,"/data/temp/rules/",,..mainForm.hwnd) ){
 			..mainForm.disabled = false;
-			
+
 			if(..io.exist("/data/temp/rules/geoip.dat")){
-				
-				..io.createDir(coreDir); 
+
+				..io.createDir(coreDir);
 				fsys.copy("/data/temp/rules/*.*",coreDir);
 				return versionTag;
-			}  
+			}
 	}
 	else {
-		..mainForm.disabled = false; 
+		..mainForm.disabled = false;
 	}
 }
 

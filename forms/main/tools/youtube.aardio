@@ -21,23 +21,23 @@ winform.clipViewer.onDrawClipboard = function(){
 	winform.btnScanClipBD.oncommand();
 }
 
-import win.clip; 
+import win.clip;
 winform.btnScanClipBD.oncommand = function(id,event){
 	winform.edit.text = "";
-	
+
 	var hBmp = win.clip.readBitmap()
 	if(hBmp){
 		var bmp = gdip.bitmap(hBmp)
 		scanner.scanBitmap(bmp,function(typeName,data){
 			winform.edit.text = data;
-		}) 
-	}	
+		})
+	}
 }
 
 import com.picture;
 winform.btnScanScreen.oncommand = function(id,event){
 	winform.edit.text = "";
-	
+
 	scanner.scanBitmap(com.picture.snap(),function(typeName,data){
 		winform.edit.text = data;
 	})
@@ -48,7 +48,7 @@ winform.onDropFiles = function(files){
 	if(bmp){
 		scanner.scanBitmap(bmp,function(typeName,data){
 			winform.edit.text = data;
-		})	
+		})
 	}
 }
 

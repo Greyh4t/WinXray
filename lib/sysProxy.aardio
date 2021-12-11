@@ -6,57 +6,57 @@ import xray.pacServer;
 
 namespace sysProxy;
 
-switch = function(mode){  
+switch = function(mode){
 	..config.proxy.mode = mode : "direct";
 	..config.proxy.save();
-  
+
 	if(mode=="pac"){
 		var pacUrl = ..xray.pacServer.getUrl();
 		if(pacUrl){
-			..inet.conn.setProxyAutoConfig(,pacUrl ); 
+			..inet.conn.setProxyAutoConfig(,pacUrl );
 		}
 		else {
 			..xray.pacServer.restart();
 		}
-		..xray.github.setProxy(true);
+		// ..xray.github.setProxy(true);
 	}
-	elseif(mode=="proxy"){ 
+	elseif(mode=="proxy"){
 		import xray.core;
-		var address = xray.core.getSystemProxyConfig(); 
-		
+		var address = xray.core.getSystemProxyConfig();
+
 		if(address){
-			..inet.conn.setProxy(,address);  
-			..xray.github.setProxy(true); 	
-		} 
+			..inet.conn.setProxy(,address);
+			// ..xray.github.setProxy(true);
+		}
 	}
 	else {
 		..inet.conn.setProxy();
-		..xray.github.setProxy(false);	
-	} 
+		// ..xray.github.setProxy(false);
+	}
 	..publish("sysProxy.modeChanged",mode)
-} 
+}
 
 switchToGlobalMode = function(){
-	switch("proxy") 
+	switch("proxy")
 }
 
-switchToPacMode = function(){  
-	switch("pac") 
+switchToPacMode = function(){
+	switch("pac")
 }
 
-switchToDirectMode  = function(){ 
-	switch("direct") 
+switchToDirectMode  = function(){
+	switch("direct")
 }
 
-switchHotkey  = function(){ 
+switchHotkey  = function(){
     var mode = ..config.proxy.mode;
 	if( mode != "pac"){
-		switch("pac") 
+		switch("pac")
 	}
 	else {
-		switch("proxy") 
+		switch("proxy")
 	}
-	
+
 	return ..config.proxy.mode;
 }
 
@@ -64,14 +64,14 @@ reset = function(proxy){
 	if(proxy===false){
 		if(..config.proxy.mode != "direct"){
 			..inet.conn.setProxy();
-			..xray.github.setProxy(false);
+			// ..xray.github.setProxy(false);
 		}
 		return;
 	}
-	
+
 	..inet.conn.setProxy();
-	switch(..config.proxy.mode); 
-} 
+	switch(..config.proxy.mode);
+}
 
 ..subscribe("pacServer.restarted",function(pacPort){
 	if(..config.proxy.mode == "pac"){
@@ -79,7 +79,7 @@ reset = function(proxy){
 	}
 } )
 
-..subscribe("xrayCore.restarted",function(socksProxyPort,httpProxPort){ 
+..subscribe("xrayCore.restarted",function(socksProxyPort,httpProxyPort){
 	if(..config.proxy.mode != "direct"){
 		reset(true);
 	}

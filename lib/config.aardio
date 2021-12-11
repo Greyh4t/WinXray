@@ -1,18 +1,18 @@
-﻿//config 配置文件 
+﻿//config 配置文件
 import fsys.config;
-config  = fsys.config("/data/"); 
+config  = fsys.config("/data/");
 
 namespace config {
-	__appName = "WinXray"; 
+	__appName = "WinXray";
 	__loadDefaultOutbounds = function(){
 		import xray.outbounds;
-		var serverData =  ..string.load("/xray-core/WinXray-default-servers.json") 
+		var serverData =  ..string.load("/xray-core/WinXray-default-servers.json")
 			: $"/xray-core/WinXray-default-servers.json"
-		
+
 		proxy.outbounds = ..xray.outbounds.importFromString(..string.removeBom(serverData));
 		..publish("outbounds.updateConfigJson",)
 	}
-	
+
 	if(!proxy.outbounds){
 		__loadDefaultOutbounds();
 	}
@@ -80,7 +80,7 @@ config.__resetDefaultCore = function(){
 					enabled=true
 				};
 				tag="proxy";
-			}; 
+			};
 			{
 				listen="127.0.0.1";
 				port=0;
@@ -132,7 +132,7 @@ config.__resetDefaultCore = function(){
 				}
 			}
 		};
-	}	
+	}
 }
 
 if(!config.core.default){
