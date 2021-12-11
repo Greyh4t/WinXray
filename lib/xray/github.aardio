@@ -5,11 +5,12 @@ namespace xray.github;
 
 setProxy = function(enableProxy){
 	var socksPort = ..xray.core.socksProxyPort;
-	if(!socksPort && enableProxy) return;
+	var httpPort = ..xray.core.httpProxyPort;
+	if((!socksPort || !httpPort) && enableProxy) return;
 
 	var git;
 	if(enableProxy){
-		git = ..process.popen("git config --global http.https://github.com.proxy socks5://127.0.0.1:" + socksPort)
+		git = ..process.popen("git config --global http.https://github.com.proxy http://127.0.0.1:" + httpPort)
 
 		var path = ..io.getSpecial(0x28/*_CSIDL_PROFILE*/,".ssh/config")
 		var str = ..string.load(path):"";
