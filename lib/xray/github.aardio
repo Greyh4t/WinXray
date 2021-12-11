@@ -11,6 +11,9 @@ setProxy = function(enableProxy){
 	var git;
 	if(enableProxy){
 		git = ..process.popen("git config --global http.https://github.com.proxy http://127.0.0.1:" + httpPort)
+		if (!git){
+			return
+		}
 
 		var path = ..io.getSpecial(0x28/*_CSIDL_PROFILE*/,".ssh/config")
 		var str = ..string.load(path):"";
@@ -20,18 +23,29 @@ setProxy = function(enableProxy){
 			}
 		}
 		else {
-			str = str + '\r\n\r\nHost github.com\r\n    ProxyCommand connect -S 127.0.0.1:' + socksPort + ' -a none %h %p'
+			if (str==""){
+				str = 'Host github.com\r\n    ProxyCommand connect -S 127.0.0.1:' + socksPort + ' -a none %h %p'
+			} else {
+				if (!..string.endWith(str, '\r\n', true)){
+					str = str + '\r\n'
+				}
+				str = str + '\r\nHost github.com\r\n    ProxyCommand connect -S 127.0.0.1:' + socksPort + ' -a none %h %p'			
+			}
 		}
 
 		..string.save(path,str)
 	}
 	else {
 		git = ..process.popen("git config --global --unset http.https://github.com.proxy")
+		if (!git){
+			return
+		}
+
 		var path = ..io.getSpecial(0x28/*_CSIDL_PROFILE*/,".ssh/config")
 		var str = ..string.load(path):"";
-		if(..string.find(str,"Host\s+github.com" ) ){
+		if(..string.find(str,"Host\s+github.com")){
 			if(..string.find(str,"Host\s+github.com\s+ProxyCommand\s+connect\s+\-S\s+127\.0\.0\.1\:\d+ \-a none \%h \%p" )){
-				str = ..string.replace(str,"Host\s+github.com\s+ProxyCommand\s+connect\s+\-S\s+127\.0\.0\.1\:\d+ \-a none \%h \%p",'Host github.com')
+				str = ..string.replace(str,"\s*Host\s+github.com\s+ProxyCommand\s+connect\s+\-S\s+127\.0\.0\.1\:\d+ \-a none \%h \%p",'')
 				..string.save(path,str)
 			}
 		}
